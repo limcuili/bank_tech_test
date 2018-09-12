@@ -36,7 +36,6 @@ describe Account do
   end
 
   describe '#withdraw' do
-    let(:account_with_100) { described_class.new(100) }
     it { is_expected.to respond_to(:withdraw).with(1).argument }
 
     it 'decreases a positive amount of the balance' do
@@ -51,6 +50,21 @@ describe Account do
       expect { account.withdraw(-1) }.to raise_error(
         'Please insert a positive amount'
       )
+    end
+
+    context 'There exist maximum negative balance' do
+      let(:account_with_100) { described_class.new(100) }
+      max_negative = Account::MAX_NEGATIVE_BALANCE
+
+      it 'allows withdraw to a balance of -50' do
+        expect { account_with_100.withdraw(150) }.not_to raise_error
+      end
+
+      it 'throws an error if you withdraw to a balance of -51' do
+        expect { account_with_100.withdraw(151) }.to raise_error(
+          "You are unable to go below a negative balance of £#{max_negative}."
+        )
+      end
     end
   end
 end
